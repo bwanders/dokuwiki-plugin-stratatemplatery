@@ -52,22 +52,6 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_stratabasic_sele
         return $match;
     }
 
-/*
-    public function render($mode, &$R, $data) {
-        list($id, $variables, $sectioning) = $data;
-
-        list($page, $hash) = $this->helper->resolveTemplate($id, $exists);
-
-        $template = $this->helper->prepareTemplate($mode, $R, $page, $hash, $error);
-        
-        $handler = new templatery_template_handler($variables);
-
-        $this->helper->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);
-
-        return true;
-    }
-*/
-
     function render($mode, &$R, $data) {
         if($data == array()) {
             return;
@@ -85,67 +69,88 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_stratabasic_sele
         list($page, $hash) = $this->templates->resolveTemplate($id, $exists);
 
         $template = $this->templates->prepareTemplate($mode, $R, $page, $hash, $error);
-       
-/* 
-        // prepare all 'columns'
-        $fields = array();
-        foreach($data['fields'] as $meta) {
-            $fields[] = array(
-                'variable'=>$meta['variable'],
-                'type'=>$this->types->loadType($meta['type']),
-                'hint'=>$meta['hint'],
-                'aggregate'=>$this->types->loadAggregate($meta['aggregate']),
-                'aggergateHint'=>$meta['aggregateHint']
-            );
-        }
-*/
 
+        $typemap = array();
+        foreach($data['fields'] as $meta) {
+            if(!isset($typemap[$meta['variable']])) {
+                $typemap[$meta['variable']] = array(
+                    'type'=>$this->types->loadType($meta['type']),
+                    'hint'=>$meta['hint']
+                );
+            }
+        }
+       
         foreach($result as $row) {
-            $handler = new stratatemplatery_template_handler($row);
+            $handler = new stratatemplatery_template_handler($row, $this->types, $this->triples, $typemap);
 
             $this->templates->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);
         }
         $result->closeCursor();
-
-/*
-        foreach($fields as $f) {
-            $values = $f['aggregate']->aggregate($row[$f['variable']], $f['aggregateHint']);
-            $firstValue = true;
-            foreach($values as $value) {
-                if(!$firstValue) $R->doc .= ', ';
-                $f['type']->render($mode, $R, $this->triples, $value, $f['hint']);
-                $firstValue = false;
-            }
-*/
-
 
         return false;
     }
 }
 
 class stratatemplatery_template_handler implements templatery_handler {
-    public function __construct($variables) {
+    public function __construct($variables, &$types, &$triples, $typemap) {
         $this->vars = $variables;
+        $this->types = $types;
+        $this->triples = $triples;
+        $this->typemap = $typemap;
+    }
+
+    protected function parseField($field) {
+        if(preg_match('/^(?:\s*('.STRATABASIC_VARIABLE.'))(?:@([a-z0-9]*)(?:\(([^\)]*)\))?)?(?:_([a-z0-9]*)(?:\(([^\)]*)\))?)?\s*$/',$field,$capture)) {
+            list(, $variable, $agg, $agghint, $type, $hint) = $capture;
+            return array('variable'=>$variable, 'aggregate'=>($agg?:null), 'aggregateHint'=>($agg?$agghint:null), 'type'=>$type, 'hint'=>$hint);
+        }
+
+        return array('variable'=>$field);
+    }
+
+    public function has($var) {
+        return isset($this->vars[$var]) && $this->vars[$var] != array();
     }
 
     public function hasField($field) {
-        return isset($this->vars[$field]) && $field != array();
+        $field = $this->parseField($field);
+        $var = $field['variable'];
+
+        return $this->has($var);
     }
 
     public function getField($mode, &$R, $field, $default=null) {
-        return $this->hasField($field) ? join(', ',$this->vars[$field]) : $default;
+        $field = $this->parseField($field);
+        $var = $field['variable'];
+
+        return $this->has($var) ? join(', ',$this->vars[$var]) : $default;
     }
 
     public function displayField($mode, &$R, $field, $default=null) {
-        if($mode != 'xhtml') return false;
+        $field = $this->parseField($field);
+        $var = $field['variable'];
 
-        $value = $this->hasField($field) ? $this->vars[$field] : array($default);
+        $values = $this->has($var) ? $this->vars[$var] : ($default==null?array():array($default));
+        $defaults = $this->typemap[$var];
 
-        if($value != array()) {
+        if(isset($field['type'])) {
+            $type = $this->types->loadType($field['type']);
+            $hint = $field['hint'];
+        } else {
+            $type = $defaults['type'];
+            $hint = $default['hint'];
+        }
+
+        $aggregate = $this->types->loadAggregate($field['aggregate']);
+        $aggergateHint = $field['aggregateHint'];
+
+        $values = $aggregate->aggregate($values, $aggregateHint);
+
+        if($values != array()) {
             $firstvalue = true;
-            foreach($value as $v) {
+            foreach($values as $value) {
                 if(!$firstvalue) $R->doc .= ', ';
-                $R->doc .= $R->_xmlEntities($v);
+                $type->render($mode, $R, $this->triples, $value, $hint);
                 $firstvalue = false;
             }
         }
