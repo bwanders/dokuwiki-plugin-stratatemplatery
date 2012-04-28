@@ -26,13 +26,12 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
         $this->templates =& plugin_load('helper', 'templatery');
     }
 
-
     function getSort() {
         return 440;
     }
 
-function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('<xdata(?: +[^#>]+?)?(?: *#[^>]*?)?>\n(?:.+?\n)*?</xdata>',$mode, 'plugin_stratatemplatery_entry');
+    function connectTo($mode) {
+        $this->Lexer->addSpecialPattern('<data(?: +[^#>]+?)?(?: *#[^>]*?)?>\n(?:.+?\n)*?</data>',$mode, 'plugin_stratatemplatery_entry');
     }
 
     function preprocess($match, &$result) {
@@ -45,7 +44,23 @@ function connectTo($mode) {
 
     function handleHeader($header, &$result) {
         // remove prefix and suffix
-        return preg_replace('/(^<xdata)|( *>$)/','',$header);
+        $header = preg_replace('/(^<data)|( *>$)/','',$header);
+
+        // extract header, and match it to get classes and fragment
+        preg_match('/^( +[^#>]+)?(?: *#([^>]*?))?$/', $header, $capture);
+
+        // process the classes into triples
+        foreach(preg_split('/\s+/',trim($capture[1])) as $class) {
+            if($class[0] == '!') {
+                $template = trim($class,'!');
+                $header = str_replace($class,$template,$header);
+                break;
+            }
+        }
+
+        $result['template'][0] = $template;
+
+        return $header;
     }
 
     function handleBody(&$tree, &$result) {
@@ -61,38 +76,44 @@ function connectTo($mode) {
 
 
     function render($mode, &$R, $data) {
-        list($id, $sectioning) = $data['template'];
-        list($page, $hash) = $this->templates->resolveTemplate($id, $exists);
-
-        // pass problems or non-xhtml renders over to the parent
-        // we want our data to be stored
-        if($data == array() || $mode != 'xhtml' || !$exists) {
+        // if the entry is broken, render and abort
+        if($data == array()) {
             return parent::render($mode, $R, $data);
         }
 
-        if($data != array()) {
-            $template = $this->templates->prepareTemplate($mode, $R, $page, $hash, $error);
-    
-            $typemap = array();
-			$row = array();
+        // otherwise, render the template
+        list($id, $sectioning) = $data['template'];
+        list($page, $hash) = $this->templates->resolveTemplate($id, $exists);
 
-			foreach($data['data'] as $prop=>$bucket) {
-				if(count($bucket) && !isset($typemap[$prop])){
-					$typemap[$prop] = array(
-						'type'=>$this->types->loadType($bucket[0]['type']),
-						'hint'=>$bucket[0]['hint']
-					);
-				}
+        $template = $this->templates->prepareTemplate($mode, $R, $page, $hash, $error);
 
-				foreach($bucket as $triple) {
-					$row[$prop][]=$triple['value'];
-				}
-			}
-          
-            $handler = new stratatemplatery_template_handler($row, $this->types, $this->triples, $typemap);
-    
-            $this->templates->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);
+        // pass problems or non-xhtml renders over to the parent
+        if($mode != 'xhtml' || !$exists || $error == 'template_nonexistant') {
+            $result = parent::render($mode, $R, $data);
+
+            if(!$exists || $error == 'template_nonexistant') return $result;
         }
+
+        $typemap = array();
+        $row = array();
+
+        foreach($data['data'] as $prop=>$bucket) {
+            if(count($bucket) && !isset($typemap[$prop])){
+                $typemap[$prop] = array(
+                    'type'=>$this->types->loadType($bucket[0]['type']),
+                    'hint'=>$bucket[0]['hint']
+                );
+            }
+
+            foreach($bucket as $triple) {
+                $row[$prop][]=$triple['value'];
+            }
+        }
+      
+        $handler = new stratatemplatery_template_handler($row, $this->types, $this->triples, $typemap);
+
+        $this->templates->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);
+
         return true;
     }
 }
