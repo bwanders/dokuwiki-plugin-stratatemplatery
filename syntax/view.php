@@ -14,7 +14,7 @@ if (!defined('DOKU_TAB')) define('DOKU_TAB', "\t");
 if (!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 
 require_once DOKU_PLUGIN.'syntax.php';
-require_once DOKU_PLUGIN.'templatery/templatery_handler.php';
+require_once DOKU_PLUGIN.'stratatemplatery/templatery_handler.php';
  
 /**
  * Templated view.
@@ -88,74 +88,6 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_stratabasic_sele
         $result->closeCursor();
 
         return false;
-    }
-}
-
-class stratatemplatery_template_handler implements templatery_handler {
-    public function __construct($variables, &$types, &$triples, $typemap) {
-        $this->vars = $variables;
-        $this->types = $types;
-        $this->triples = $triples;
-        $this->typemap = $typemap;
-    }
-
-    protected function parseField($field) {
-        if(preg_match('/^(?:\s*('.STRATABASIC_VARIABLE.'))(?:@([a-z0-9]*)(?:\(([^\)]*)\))?)?(?:_([a-z0-9]*)(?:\(([^\)]*)\))?)?\s*$/',$field,$capture)) {
-            list(, $variable, $agg, $agghint, $type, $hint) = $capture;
-            return array('variable'=>$variable, 'aggregate'=>($agg?:null), 'aggregateHint'=>($agg?$agghint:null), 'type'=>$type, 'hint'=>$hint);
-        }
-
-        return array('variable'=>$field);
-    }
-
-    public function has($var) {
-        return isset($this->vars[$var]) && $this->vars[$var] != array();
-    }
-
-    public function hasField($field) {
-        $field = $this->parseField($field);
-        $var = $field['variable'];
-
-        return $this->has($var);
-    }
-
-    public function getField($mode, &$R, $field, $default=null) {
-        $field = $this->parseField($field);
-        $var = $field['variable'];
-
-        return $this->has($var) ? join(', ',$this->vars[$var]) : $default;
-    }
-
-    public function displayField($mode, &$R, $field, $default=null) {
-        $field = $this->parseField($field);
-        $var = $field['variable'];
-
-        $values = $this->has($var) ? $this->vars[$var] : ($default==null?array():array($default));
-        $defaults = $this->typemap[$var];
-
-        if(isset($field['type'])) {
-            $type = $this->types->loadType($field['type']);
-            $hint = $field['hint'];
-        } else {
-            $type = $defaults['type'];
-            $hint = $default['hint'];
-        }
-
-        $aggregate = $this->types->loadAggregate($field['aggregate']);
-        $aggergateHint = $field['aggregateHint'];
-
-        $values = $aggregate->aggregate($values, $aggregateHint);
-
-        if($values != array()) {
-            $firstvalue = true;
-            foreach($values as $value) {
-                if(!$firstvalue) $R->doc .= ', ';
-                $type->render($mode, $R, $this->triples, $value, $hint);
-                $firstvalue = false;
-            }
-        }
-
-        return true;
     }
 }
 
