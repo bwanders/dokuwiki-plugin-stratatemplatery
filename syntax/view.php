@@ -1,6 +1,6 @@
 <?php
 /**
- * Strata Basic, data entry plugin
+ * Strata Templatery, view plugin
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Brend Wanders <b.wanders@utwente.nl>

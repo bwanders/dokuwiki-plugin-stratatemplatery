@@ -1,6 +1,6 @@
 <?php
 /**
- * Strata Basic, data entry plugin
+ * Strata Templatery, data entry plugin
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Brend Wanders <b.wanders@utwente.nl>
@@ -58,7 +58,8 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
             }
         }
 
-        $result['template'][0] = $template;
+        $template = trim($template);
+        $result['template'][0] = $template ?: null;
 
         return $header;
     }
@@ -83,9 +84,12 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
 
         // otherwise, render the template
         list($id, $sectioning) = $data['template'];
-        list($page, $hash) = $this->templates->resolveTemplate($id, $exists);
-
-        $template = $this->templates->prepareTemplate($mode, $R, $page, $hash, $error);
+        if($id != null) {
+            list($page, $hash) = $this->templates->resolveTemplate($id, $exists);
+            $template = $this->templates->prepareTemplate($mode, $R, $page, $hash, $error);
+        } else {
+            $exists = false;
+        }
 
         // pass problems or non-xhtml renders over to the parent
         if($mode != 'xhtml' || !$exists || $error == 'template_nonexistant') {
