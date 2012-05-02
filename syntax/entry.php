@@ -49,7 +49,7 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
         // extract header, and match it to get classes and fragment
         preg_match('/^( +[^#>]+)?(?: *#([^>]*?))?$/', $header, $capture);
 
-        // process the classes into triples
+        // find the first class with an exclamation
         foreach(preg_split('/\s+/',trim($capture[1])) as $class) {
             if($class[0] == '!') {
                 $template = trim($class,'!');
