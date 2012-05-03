@@ -7,9 +7,7 @@
  */
  
 // must be run within Dokuwiki
-if (!defined('DOKU_INC')) die();
-
-require_once DOKU_PLUGIN.'templatery/templatery_handler.php';
+if (!defined('DOKU_INC')) die('Meh.');
 
 /**
  * This templatery handler provides typed functionality.
