@@ -110,7 +110,7 @@ class syntax_plugin_stratatemplatery_template extends DokuWiki_Syntax_Plugin {
             $typemap[$type]['type'] = $this->types->loadType($data['type']);
         }
         
-        $handler = new stratatemplatery_template_handler($variables, $this->types, $this->triples, $typemap);
+        $handler = new stratatemplatery_handler($variables, $this->types, $this->triples, $typemap);
 
         $this->helper->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);
 

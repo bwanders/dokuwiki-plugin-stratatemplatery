@@ -12,6 +12,9 @@ if (!defined('DOKU_INC')) die('Meh.');
 // FIXME: Should be removed once it can be autoloaded
 require_once DOKU_PLUGIN.'stratastorage/strata_querytree_visitor.php';
 
+// Load the templatery handler
+require_once DOKU_PLUGIN.'stratatemplatery/stratatemplatery_handler.php';
+
 class action_plugin_stratatemplatery extends DokuWiki_Action_Plugin {
     function __construct() {
         $this->triples =& plugin_load('helper', 'stratastorage_triples', false);

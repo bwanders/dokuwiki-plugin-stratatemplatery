@@ -9,10 +9,12 @@
 // must be run within Dokuwiki
 if (!defined('DOKU_INC')) die('Meh.');
 
+require_once DOKU_PLUGIN.'templatery/templatery_handler.php';
+
 /**
  * This templatery handler provides typed functionality.
  */
-class stratatemplatery_template_handler implements templatery_handler {
+class stratatemplatery_handler implements templatery_handler {
     public function __construct($variables, &$types, &$triples, $typemap) {
         $this->vars = $variables;
         $this->types = $types;

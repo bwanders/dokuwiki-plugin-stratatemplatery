@@ -76,7 +76,7 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_stratabasic_sele
         }
        
         foreach($result as $row) {
-            $handler = new stratatemplatery_template_handler($row, $this->types, $this->triples, $typemap);
+            $handler = new stratatemplatery_handler($row, $this->types, $this->triples, $typemap);
 
             $this->templates->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);
         }
