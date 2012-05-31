@@ -4,4 +4,4 @@ email  b.wanders@utwente.nl
 date   2012-04-27
 name   Strata Templatery
 desc   Combines Templatery and Strata to template queries and entries
-url    http://example.com
+url    http://github.com/bwanders/dokuwiki-plugin-stratatemplatery
