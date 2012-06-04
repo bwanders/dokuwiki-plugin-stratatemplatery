@@ -28,10 +28,10 @@ class stratatemplatery_handler implements templatery_handler {
     protected function parseField($field) {
         if(preg_match('/^(?:\s*('.STRATABASIC_VARIABLE.'))(?:@([a-z0-9]*)(?:\(([^\)]*)\))?)?(?:_([a-z0-9]*)(?:\(([^\)]*)\))?)?\s*$/',$field,$capture)) {
             list(, $variable, $agg, $agghint, $type, $hint) = $capture;
-            return array('variable'=>$variable, 'aggregate'=>($agg?:null), 'aggregateHint'=>($agg?$agghint:null), 'type'=>$type, 'hint'=>$hint);
+            return array('variable'=>strtolower($variable), 'aggregate'=>($agg?:null), 'aggregateHint'=>($agg?$agghint:null), 'type'=>$type, 'hint'=>$hint);
         }
 
-        return array('variable'=>$field);
+        return array('variable'=>strtolower($field));
     }
 
     /**

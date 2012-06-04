@@ -67,6 +67,7 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_stratabasic_sele
 
         $typemap = array();
         foreach($data['fields'] as $meta) {
+			$meta['variable'] = strtolower($meta['variable']);
             if(!isset($typemap[$meta['variable']])) {
                 $typemap[$meta['variable']] = array(
                     'type'=>$this->types->loadType($meta['type']),
@@ -76,7 +77,11 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_stratabasic_sele
         }
        
         foreach($result as $row) {
-            $handler = new stratatemplatery_handler($row, $this->types, $this->triples, $typemap);
+			$values = array();
+			foreach($row as $key=>$value) {
+				$values[strtolower($key)] = $value;
+			}
+            $handler = new stratatemplatery_handler($values, $this->types, $this->triples, $typemap);
 
             $this->templates->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);
         }

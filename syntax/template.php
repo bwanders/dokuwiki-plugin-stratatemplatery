@@ -58,7 +58,7 @@ class syntax_plugin_stratatemplatery_template extends DokuWiki_Syntax_Plugin {
                 list($match, $property, $type, $hint, $multi, $values) = $capture;
 
                 // trim property so we don't get accidental 'name   ' keys
-                $property = utf8_trim($property);
+                $property = strtolower(utf8_trim($property));
 
                 // determine values, splitting on commas if necessary
                 if($multi == '*') {

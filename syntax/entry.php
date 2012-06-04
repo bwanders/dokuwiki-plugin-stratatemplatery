@@ -96,6 +96,7 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
         $row = array();
 
         foreach($data['data'] as $prop=>$bucket) {
+			$prop = strtolower($prop);
             if(count($bucket) && !isset($typemap[$prop])){
                 $typemap[$prop] = array(
                     'type'=>$this->types->loadType($bucket[0]['type']),
