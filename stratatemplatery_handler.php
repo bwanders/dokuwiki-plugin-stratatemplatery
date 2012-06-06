@@ -49,24 +49,38 @@ class stratatemplatery_handler implements templatery_handler {
         return $this->has($var);
     }
 
-    public function getField($mode, &$R, $field, $default=null) {
-        // parse field
-        $field = $this->parseField($field);
-        $var = $field['variable'];
-
-        // gracefully handle unavailable fields
-        return $this->has($var) ? join(', ',$this->vars[$var]) : $default;
-    }
-
-    public function displayField($mode, &$R, $field, $default=null) {
-        // parse field
-        $field = $this->parseField($field);
+    protected function fetchField($field, $default=null) {
         $var = $field['variable'];
 
         // check availability, and fix default value if necessary
         $values = $this->has($var) ? $this->vars[$var] : ($default==null?array():array($default));
 
+        // load any defined aggregation
+        $aggregate = $this->types->loadAggregate($field['aggregate']);
+        $aggergateHint = $field['aggregateHint'];
+
+        // execute aggregator
+        $values = $aggregate->aggregate($values, $aggregateHint);
+
+        return $values;
+    }
+
+    public function getField($mode, &$R, $field, $default=null) {
+        // parse field
+        $field = $this->parseField($field);
+
+        // gracefully handle unavailable fields
+        return join(', ',$this->fetchField($field, $default));
+    }
+
+    public function displayField($mode, &$R, $field, $default=null) {
+        // parse field
+        $field = $this->parseField($field);
+
+        $values = $this->fetchField($field, $default);
+
         // did the field have type info?
+        $var = $field['variable'];
         if(isset($field['type'])) {
             $type = $this->types->loadType($field['type']);
             $hint = $field['hint'];
@@ -81,13 +95,6 @@ class stratatemplatery_handler implements templatery_handler {
                 $type = $this->types->loadType($type);
             }
         }
-
-        // load any defined aggregation
-        $aggregate = $this->types->loadAggregate($field['aggregate']);
-        $aggergateHint = $field['aggregateHint'];
-
-        // execute aggregator
-        $values = $aggregate->aggregate($values, $aggregateHint);
 
         // display fields
         if($values != array()) {
