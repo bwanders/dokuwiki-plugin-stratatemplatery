@@ -71,6 +71,8 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
 
 
     function render($mode, &$R, $data) {
+        global $ID;
+
         // if the entry is broken, render and abort
         if($data == array()) {
             return parent::render($mode, $R, $data);
@@ -96,7 +98,7 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
         $row = array();
 
         foreach($data['data'] as $prop=>$bucket) {
-			$prop = strtolower($prop);
+            $prop = strtolower($prop);
             if(count($bucket) && !isset($typemap[$prop])){
                 $typemap[$prop] = array(
                     'type'=>$this->types->loadType($bucket[0]['type']),
@@ -108,6 +110,17 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
                 $row[$prop][]=$triple['value'];
             }
         }
+        
+        $subject = $ID.'#'.$data['entry'];
+
+        // resolve the subject to normalize everything
+        resolve_pageid(getNS($ID),$subject,$exists);
+
+        $row['.subject'][] = $subject;
+        $typemap['.subject'] = array(
+            'type'=>$this->types->loadType('ref'),
+            'hint'=>null
+        );
       
         $handler = new stratatemplatery_handler($row, $this->types, $this->triples, $typemap);
 
