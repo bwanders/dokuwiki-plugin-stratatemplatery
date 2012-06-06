@@ -57,7 +57,7 @@ class stratatemplatery_handler implements templatery_handler {
 
         // load any defined aggregation
         $aggregate = $this->types->loadAggregate($field['aggregate']);
-        $aggergateHint = $field['aggregateHint'];
+        $aggregateHint = $field['aggregateHint'];
 
         // execute aggregator
         $values = $aggregate->aggregate($values, $aggregateHint);
