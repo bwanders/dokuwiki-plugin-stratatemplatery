@@ -94,6 +94,29 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
             if(!$exists || $error == 'template_nonexistant') return $result;
         }
 
+        // create '.subject' field 
+        $subject = $ID.'#'.$data['entry'];
+
+        // resolve the subject to normalize everything
+        resolve_pageid(getNS($ID),$subject,$exists);
+
+        // create 'entry title' field
+        $titleKey = $this->helper->normalizePredicate($this->triples->getTitleKey());
+
+        $fixTitle = false;
+
+        // determine the title if we are rendering XHTML
+        if(empty($data['data'][$titleKey]) && $mode == 'xhtml') {
+            $titleTriples = $this->triples->fetchTriples($subject,$titleKey);
+            if(count($titleTriples)) {
+                $data['data'][$titleKey][] = array(
+                    'value'=>$titleTriples[0]['object'],
+                    'type'=>'text',
+                    'hint'=>null
+                );
+            }
+        }
+
         $typemap = array();
         $row = array();
 
@@ -110,17 +133,15 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
                 $row[$prop][]=$triple['value'];
             }
         }
-        
-        $subject = $ID.'#'.$data['entry'];
 
-        // resolve the subject to normalize everything
-        resolve_pageid(getNS($ID),$subject,$exists);
-
+        // store '.subject' field 
         $row['.subject'][] = $subject;
         $typemap['.subject'] = array(
             'type'=>$this->types->loadType('ref'),
             'hint'=>null
         );
+
+
       
         $handler = new stratatemplatery_handler($row, $this->types, $this->triples, $typemap);
 
