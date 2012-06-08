@@ -26,7 +26,7 @@ class stratatemplatery_handler implements templatery_handler {
      * Splits a field into aggregation, type and accompanying hints.
      */
     protected function parseField($field) {
-        if(preg_match('/^(?:\s*('.STRATABASIC_VARIABLE.'))(?:@([a-z0-9]*)(?:\(([^\)]*)\))?)?(?:_([a-z0-9]*)(?:\(([^\)]*)\))?)?\s*$/',$field,$capture)) {
+        if(preg_match('/^(?:\s*('.STRATABASIC_PREDICATE.'))(?:@([a-z0-9]*)(?:\(([^\)]*)\))?)?(?:_([a-z0-9]*)(?:\(([^\)]*)\))?)?\s*$/',$field,$capture)) {
             list(, $variable, $agg, $agghint, $type, $hint) = $capture;
             return array('variable'=>strtolower($variable), 'aggregate'=>($agg?:null), 'aggregateHint'=>($agg?$agghint:null), 'type'=>$type, 'hint'=>$hint);
         }
