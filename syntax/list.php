@@ -60,7 +60,17 @@ class syntax_plugin_stratatemplatery_list extends syntax_plugin_stratabasic_sele
     }
 
     function render($mode, &$R, $data) {
-        if($data == array()) {
+        if($data == array() || isset($data['error'])) {
+            if($mode == 'xhtml') {
+                $R->listu_open();
+                $R->listitem_open(1);
+                $R->listcontent_open();
+                $this->displayError($R, $data);
+                $R->listcontent_close();
+                $R->listitem_close();
+                $R->listu_close();
+            }
+
             return;
         }
 
