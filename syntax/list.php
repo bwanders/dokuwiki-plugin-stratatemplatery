@@ -19,7 +19,7 @@ class syntax_plugin_stratatemplatery_list extends syntax_plugin_stratabasic_sele
     }
 
     public function getAllowedTypes() {
-        return array('formatting','substition','disabled');
+        return array('formatting','substition','disabled','protected');
     }
 
     function connectTo($mode) {
