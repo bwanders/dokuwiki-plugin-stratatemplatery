@@ -64,7 +64,7 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
         if(count($trees)) {
             $lines = $this->helper->extractText($trees[0]);
             if(count($lines)) {
-                $result['template'][0] = trim($lines[0]);
+                $result['template'][0] = trim($lines[0]['text']);
             }
         }
     }
