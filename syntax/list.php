@@ -23,7 +23,7 @@ class syntax_plugin_stratatemplatery_list extends syntax_plugin_stratabasic_sele
     }
 
     function connectTo($mode) {
-        $this->Lexer->addEntryPattern('<list'.$this->helper->fieldsShortPattern().'* *>\n.+?\n<item>(?=.*?</list>)',$mode, 'plugin_stratatemplatery_list');
+        $this->Lexer->addEntryPattern('<list'.$this->helper->fieldsShortPattern().'* *>\n.+?\n<template>(?=.*?</list>)',$mode, 'plugin_stratatemplatery_list');
     }
 
     function postConnect() {
