@@ -32,7 +32,7 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_stratabasic_sele
         if(count($trees)) {
             $lines = $this->helper->extractText($trees[0]);
             if(count($lines)) {
-                $result['template'][0] = trim($lines[0]);
+                $result['template'][0] = trim($lines[0]['text']);
             }
         }
     }
@@ -46,7 +46,11 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_stratabasic_sele
     }
 
     function render($mode, &$R, $data) {
-        if($data == array()) {
+        if($data == array() || isset($data['error'])) {
+            if($mode == 'xhtml') {
+                $this->displayError($R, $data);
+            }
+
             return;
         }
 
