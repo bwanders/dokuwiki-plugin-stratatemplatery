@@ -10,7 +10,7 @@
 if (!defined('DOKU_INC')) die('Meh.');
 
 /**
- * Templated view.
+ * Templated list view.
  */
 class syntax_plugin_stratatemplatery_list extends syntax_plugin_stratabasic_select {
     function __construct() {
@@ -23,11 +23,11 @@ class syntax_plugin_stratatemplatery_list extends syntax_plugin_stratabasic_sele
     }
 
     function connectTo($mode) {
-        $this->Lexer->addEntryPattern('<listview'.$this->helper->fieldsShortPattern().'* *>\n.+?\n<item>(?=.*?</listview>)',$mode, 'plugin_stratatemplatery_list');
+        $this->Lexer->addEntryPattern('<list'.$this->helper->fieldsShortPattern().'* *>\n.+?\n<item>(?=.*?</list>)',$mode, 'plugin_stratatemplatery_list');
     }
 
     function postConnect() {
-        $this->Lexer->addExitPattern('</listview>', 'plugin_stratatemplatery_list');
+        $this->Lexer->addExitPattern('</list>', 'plugin_stratatemplatery_list');
     }
 
     function handle($match, $state, $pos, &$handler) {
@@ -52,7 +52,7 @@ class syntax_plugin_stratatemplatery_list extends syntax_plugin_stratabasic_sele
     }
 
     function handleHeader($header, &$result, &$typemap) {
-        return preg_replace('/(^<listview)|( *>$)/','',$header);
+        return preg_replace('/(^<list)|( *>$)/','',$header);
     }
 
     function render($mode, &$R, $data) {
@@ -82,6 +82,7 @@ class syntax_plugin_stratatemplatery_list extends syntax_plugin_stratabasic_sele
             }
         }
 
+        $R->doc .= '<div class="stratabasic-list">'.DOKU_LF;
         $R->listu_open();
         foreach($result as $row) {
             $R->listitem_open(1);
@@ -97,6 +98,7 @@ class syntax_plugin_stratatemplatery_list extends syntax_plugin_stratabasic_sele
             $R->listitem_close();
         }
         $R->listu_close();
+        $R->doc .= '</div>'.DOKU_LF;
         $result->closeCursor();
 
         return false;
