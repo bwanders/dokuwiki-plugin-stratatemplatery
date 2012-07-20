@@ -18,6 +18,10 @@ class syntax_plugin_stratatemplatery_list extends syntax_plugin_stratabasic_sele
         $this->templates =& plugin_load('helper', 'templatery');
     }
 
+    public function getSort() {
+        return parent::getSort() - 1;
+    }
+
     public function getAllowedTypes() {
         return array('formatting','substition','disabled','protected');
     }
