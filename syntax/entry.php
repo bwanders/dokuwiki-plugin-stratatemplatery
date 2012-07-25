@@ -125,6 +125,7 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
             if(count($bucket) && !isset($typemap[$prop])){
                 $typemap[$prop] = array(
                     'type'=>$this->types->loadType($bucket[0]['type']),
+                    'typeName'=>$bucket[0]['type'],
                     'hint'=>$bucket[0]['hint']
                 );
             }

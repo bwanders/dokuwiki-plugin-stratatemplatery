@@ -83,15 +83,18 @@ class stratatemplatery_handler implements templatery_handler {
         $var = $field['variable'];
         if(isset($field['type'])) {
             $type = $this->types->loadType($field['type']);
+            $typeName = $field['type'];
             $hint = $field['hint'];
         } else {
             // try the typemap
             if(isset($this->typemap[$var])) {
                 $type = $this->typemap[$var]['type'];
+                $typeName = $this->typemap[$var]['typeName'];
                 $hint = $this->typemap[$var]['hint'];
             } else {
                 // use the configured default type
                 list($type,$hint) = $this->types->getDefaultType();
+                $typeName = $type;
                 $type = $this->types->loadType($type);
             }
         }
@@ -99,11 +102,15 @@ class stratatemplatery_handler implements templatery_handler {
         // display fields
         if($values != array()) {
             $firstvalue = true;
+            if($mode == 'xhtml') $R->doc .= '<span class="strata_field">';
             foreach($values as $value) {
                 if(!$firstvalue) $R->doc .= ', ';
+                if($mode == 'xhtml') $R->doc .= '<span class="strata_value stratatype_'.$typeName.'">';
                 $type->render($mode, $R, $this->triples, $value, $hint);
+                if($mode == 'xhtml') $R->doc .= '</span>';
                 $firstvalue = false;
             }
+            if($mode == 'xhtml') $R->doc .= '</span>';
         }
 
         return true;

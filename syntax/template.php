@@ -106,8 +106,9 @@ class syntax_plugin_stratatemplatery_template extends DokuWiki_Syntax_Plugin {
         $template = $this->helper->prepareTemplate($mode, $R, $page, $hash, $error);
 
         // prepare typemap
-        foreach($typemap as $type=>$data) {
-            $typemap[$type]['type'] = $this->types->loadType($data['type']);
+        foreach($typemap as $var=>$data) {
+            $typemap[$var]['typeName'] = $data['type'];
+            $typemap[$var]['type'] = $this->types->loadType($data['type']);
         }
         
         $handler = new stratatemplatery_handler($variables, $this->types, $this->triples, $typemap);

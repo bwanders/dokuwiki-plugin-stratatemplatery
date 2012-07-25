@@ -75,6 +75,7 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_stratabasic_sele
             if(!isset($typemap[$meta['variable']])) {
                 $typemap[$meta['variable']] = array(
                     'type'=>$this->types->loadType($meta['type']),
+                    'typeName'=>$meta['type'],
                     'hint'=>$meta['hint']
                 );
             }
