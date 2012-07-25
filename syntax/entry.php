@@ -139,6 +139,7 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
         $row['.subject'][] = $subject;
         $typemap['.subject'] = array(
             'type'=>$this->types->loadType('ref'),
+            'typeName'=>'ref',
             'hint'=>null
         );
 
