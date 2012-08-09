@@ -37,7 +37,7 @@ class syntax_plugin_stratatemplatery_list extends syntax_plugin_stratabasic_sele
     function handle($match, $state, $pos, &$handler) {
         switch($state) {
             case DOKU_LEXER_ENTER:
-                $capturer = new StrataTemplatery_Handler_Inline_Capture($handler->CallWriter, parent::handle($match, $state, $pos, &$handler));
+                $capturer = new StrataTemplatery_Handler_Inline_Capture($handler->CallWriter, parent::handle($match, $state, $pos, $handler));
                 $handler->CallWriter =& $capturer;
                 return false;
 
