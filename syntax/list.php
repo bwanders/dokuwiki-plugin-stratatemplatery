@@ -27,11 +27,11 @@ class syntax_plugin_stratatemplatery_list extends syntax_plugin_stratabasic_sele
     }
 
     function connectTo($mode) {
-        $this->Lexer->addEntryPattern('<list'.$this->helper->fieldsShortPattern().'* *>\n.+?\n<template>(?=.*?</list>)',$mode, 'plugin_stratatemplatery_list');
+        $this->Lexer->addEntryPattern('<template-list'.$this->helper->fieldsShortPattern().'* *>\n.+?\n<template>(?=.*?</template-list>)',$mode, 'plugin_stratatemplatery_list');
     }
 
     function postConnect() {
-        $this->Lexer->addExitPattern('</list>', 'plugin_stratatemplatery_list');
+        $this->Lexer->addExitPattern('</template-list>', 'plugin_stratatemplatery_list');
     }
 
     function handle($match, $state, $pos, &$handler) {
@@ -56,7 +56,7 @@ class syntax_plugin_stratatemplatery_list extends syntax_plugin_stratabasic_sele
     }
 
     function handleHeader($header, &$result, &$typemap) {
-        return preg_replace('/(^<list)|( *>$)/','',$header);
+        return preg_replace('/(^<template-list)|( *>$)/','',$header);
     }
 
     function render($mode, &$R, $data) {
