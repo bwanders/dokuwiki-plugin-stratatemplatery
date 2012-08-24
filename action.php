@@ -17,8 +17,7 @@ require_once DOKU_PLUGIN.'stratatemplatery/stratatemplatery_handler.php';
 
 class action_plugin_stratatemplatery extends DokuWiki_Action_Plugin {
     function __construct() {
-        $this->triples =& plugin_load('helper', 'stratastorage_triples', false);
-        $this->triples->initialize();
+        $this->triples =& plugin_load('helper', 'stratastorage_triples');
 
         $this->helper =& plugin_load('helper', 'templatery');
     }

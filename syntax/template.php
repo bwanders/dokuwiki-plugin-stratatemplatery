@@ -16,8 +16,7 @@ class syntax_plugin_stratatemplatery_template extends DokuWiki_Syntax_Plugin {
     public function __construct() {
         $this->strata =& plugin_load('helper', 'stratabasic');
         $this->types =& plugin_load('helper', 'stratastorage_types');
-        $this->triples =& plugin_load('helper', 'stratastorage_triples', false);
-        $this->triples->initialize();
+        $this->triples =& plugin_load('helper', 'stratastorage_triples');
 
         $this->helper =& plugin_load('helper', 'templatery');
     }
