@@ -115,6 +115,19 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
                     'hint'=>null
                 );
             }
+        } elseif(empty($data['data'][$titleKey])) {
+            if(!empty($data['title candidate'])) {
+                // we have a candidate from somewhere
+                $data['data'][$titleKey][] = $data['title candidate'];
+            } elseif(!empty($R->meta['title'])) {
+                // we do not have a candidate, so we use the page title
+                // (this is possible because fragments set the candidate)
+                $data['data'][$titleKey][] = array(
+                    'value'=>$R->meta['title'],
+                    'type'=>'text',
+                    'hint'=>null
+                );
+            }
         }
 
         $typemap = array();
