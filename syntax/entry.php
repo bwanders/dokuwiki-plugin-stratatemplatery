@@ -28,7 +28,7 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_strata_entry {
         }
     }
 
-    function preprocess($match, &$result) {
+    function preprocess($match, $state, $pos, &$handler, &$result) {
         // did we include a template into a section?
         $sectioning = $this->templates->getSectioning($handler);
 
@@ -162,6 +162,26 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_strata_entry {
             'typeName'=>'ref',
             'hint'=>null
         );
+
+        list($currentPosition, $previousPosition, $nextPosition) = $this->getPositions($data);
+
+        if(!empty($previousPosition)) {
+            $row['.previous'][] = $ID.'#'.$previousPosition;
+            $typemap['.previous'] = array(
+                'type'=>$this->util->loadType('link'),
+                'typeName'=>'link',
+                'hint'=>$this->util->getLang('data_entry_previous')
+            );
+        }
+
+        if(!empty($nextPosition)) {
+            $row['.next'][] = $ID.'#'.$nextPosition;
+            $typemap['.next'] = array(
+                'type'=>$this->util->loadType('link'),
+                'typeName'=>'link',
+                'hint'=>$this->util->getLang('data_entry_next')
+            );
+        }
 
 
       

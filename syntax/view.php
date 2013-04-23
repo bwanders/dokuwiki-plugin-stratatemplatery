@@ -37,7 +37,7 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_strata_select {
         }
     }
 
-    function preprocess($match, &$handler, &$result, &$typemap) {
+    function preprocess($match, $state, $pos, &$handler, &$result, &$typemap) {
         // did we include a template into a section?
         $sectioning = $this->templates->getSectioning($handler);
 
