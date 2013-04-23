@@ -12,7 +12,7 @@ if (!defined('DOKU_INC')) die('Meh.');
 /**
  * Templated view.
  */
-class syntax_plugin_stratatemplatery_view extends syntax_plugin_stratabasic_select {
+class syntax_plugin_stratatemplatery_view extends syntax_plugin_strata_select {
     function __construct() {
         parent::__construct();
         $this->templates =& plugin_load('helper', 'templatery');
@@ -74,7 +74,7 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_stratabasic_sele
 			$meta['variable'] = strtolower($meta['variable']);
             if(!isset($typemap[$meta['variable']])) {
                 $typemap[$meta['variable']] = array(
-                    'type'=>$this->types->loadType($meta['type']),
+                    'type'=>$this->util->loadType($meta['type']),
                     'typeName'=>$meta['type'],
                     'hint'=>$meta['hint']
                 );
@@ -86,7 +86,7 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_stratabasic_sele
 			foreach($row as $key=>$value) {
 				$values[strtolower($key)] = $value;
 			}
-            $handler = new stratatemplatery_handler($values, $this->types, $this->triples, $typemap);
+            $handler = new stratatemplatery_handler($values, $this->util, $this->triples, $typemap);
 
             $this->templates->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);
         }

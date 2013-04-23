@@ -12,7 +12,7 @@ if (!defined('DOKU_INC')) die('Meh.');
 /**
  * Data entry syntax for dedicated data blocks.
  */
-class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_entry {
+class syntax_plugin_stratatemplatery_entry extends syntax_plugin_strata_entry {
     function __construct() {
         parent::__construct();
         $this->templates =& plugin_load('helper', 'templatery');
@@ -43,13 +43,20 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
         // extract header, and match it to get classes and fragment
         preg_match('/^( +[^#>]+)?(?: *#([^>]*?))?$/', $header, $capture);
 
+        $classes = preg_split('/\s+/', trim($capture[1]));
+
         // find the first class with an exclamation
-        foreach(preg_split('/\s+/',trim($capture[1])) as $class) {
+        foreach($classes as $class) {
             if($class[0] == '!') {
                 $template = trim($class,'!');
                 $header = str_replace($class,$template,$header);
                 break;
             }
+        }
+
+        // if there was not explicit class focus, we try the first
+        if(empty($template)) {
+            $template = $classes[0];
         }
 
         $template = trim($template);
@@ -59,10 +66,10 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
     }
 
     function handleBody(&$tree, &$result) {
-        $trees = $this->helper->extractGroups($tree, 'template');
+        $trees = $this->syntax->extractGroups($tree, 'template');
 
         if(count($trees)) {
-            $lines = $this->helper->extractText($trees[0]);
+            $lines = $this->syntax->extractText($trees[0]);
             if(count($lines)) {
                 $result['template'][0] = trim($lines[0]['text']);
             }
@@ -101,7 +108,7 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
         resolve_pageid(getNS($ID),$subject,$exists);
 
         // create 'entry title' field
-        $titleKey = $this->helper->normalizePredicate($this->triples->getTitleKey());
+        $titleKey = $this->util->normalizePredicate($this->util->getTitleKey());
 
         $fixTitle = false;
 
@@ -137,7 +144,7 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
             $prop = strtolower($prop);
             if(count($bucket) && !isset($typemap[$prop])){
                 $typemap[$prop] = array(
-                    'type'=>$this->types->loadType($bucket[0]['type']),
+                    'type'=>$this->util->loadType($bucket[0]['type']),
                     'typeName'=>$bucket[0]['type'],
                     'hint'=>$bucket[0]['hint']
                 );
@@ -151,14 +158,14 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_stratabasic_ent
         // store '.subject' field 
         $row['.subject'][] = $subject;
         $typemap['.subject'] = array(
-            'type'=>$this->types->loadType('ref'),
+            'type'=>$this->util->loadType('ref'),
             'typeName'=>'ref',
             'hint'=>null
         );
 
 
       
-        $handler = new stratatemplatery_handler($row, $this->types, $this->triples, $typemap);
+        $handler = new stratatemplatery_handler($row, $this->util, $this->triples, $typemap);
 
         $this->templates->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);
 

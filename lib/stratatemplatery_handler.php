@@ -9,15 +9,14 @@
 // must be run within Dokuwiki
 if (!defined('DOKU_INC')) die('Meh.');
 
-require_once DOKU_PLUGIN.'templatery/templatery_handler.php';
-
 /**
  * This templatery handler provides typed functionality.
  */
 class stratatemplatery_handler implements templatery_handler {
-    public function __construct($variables, &$types, &$triples, $typemap) {
+    public function __construct($variables, &$util, &$triples, $typemap) {
+        $this->syntax =& plugin_load('helper', 'strata_syntax');
         $this->vars = $variables;
-        $this->types = $types;
+        $this->util = $util;
         $this->triples = $triples;
         $this->typemap = $typemap;
     }
@@ -26,9 +25,14 @@ class stratatemplatery_handler implements templatery_handler {
      * Splits a field into aggregation, type and accompanying hints.
      */
     protected function parseField($field) {
-        if(preg_match('/^(?:\s*('.STRATABASIC_PREDICATE.'))(?:@([a-z0-9]*)(?:\(([^\)]*)\))?)?(?:_([a-z0-9]*)(?:\(([^\)]*)\))?)?\s*$/',$field,$capture)) {
-            list(, $variable, $agg, $agghint, $type, $hint) = $capture;
-            return array('variable'=>strtolower($variable), 'aggregate'=>($agg?:null), 'aggregateHint'=>($agg?$agghint:null), 'type'=>$type, 'hint'=>$hint);
+        $p = $this->syntax->getPatterns();
+
+        if(preg_match("/^({$p->predicate})\s*({$p->aggregate})?\s*({$p->type})?$/",$field,$capture)) {
+            list(, $variable, $agg, $type) = $capture;
+            $variable = trim(strtolower($variable));
+            list($agg, $agghint) = $p->aggregate($agg);
+            list($type, $typehint) = $p->type($type);
+            return array('variable'=>$variable, 'aggregate'=>$agg, 'aggregateHint'=>$agghint, 'type'=>$type, 'hint'=>$typehint);
         }
 
         return array('variable'=>strtolower($field));
@@ -56,7 +60,7 @@ class stratatemplatery_handler implements templatery_handler {
         $values = $this->has($var) ? $this->vars[$var] : ($default==null?array():array($default));
 
         // load any defined aggregation
-        $aggregate = $this->types->loadAggregate($field['aggregate']);
+        $aggregate = $this->util->loadAggregate($field['aggregate']);
         $aggregateHint = $field['aggregateHint'];
 
         // execute aggregator
@@ -82,7 +86,7 @@ class stratatemplatery_handler implements templatery_handler {
         // did the field have type info?
         $var = $field['variable'];
         if(isset($field['type'])) {
-            $type = $this->types->loadType($field['type']);
+            $type = $this->util->loadType($field['type']);
             $typeName = $field['type'];
             $hint = $field['hint'];
         } else {
@@ -93,24 +97,15 @@ class stratatemplatery_handler implements templatery_handler {
                 $hint = $this->typemap[$var]['hint'];
             } else {
                 // use the configured default type
-                list($type,$hint) = $this->types->getDefaultType();
+                list($type,$hint) = $this->util->getDefaultType();
                 $typeName = $type;
-                $type = $this->types->loadType($type);
+                $type = $this->util->loadType($type);
             }
         }
 
         // display fields
         if($values != array()) {
-            $firstvalue = true;
-            if($mode == 'xhtml') $R->doc .= '<span class="strata_field">';
-            foreach($values as $value) {
-                if(!$firstvalue) $R->doc .= ', ';
-                if($mode == 'xhtml') $R->doc .= '<span class="strata_value stratatype_'.$typeName.'">';
-                $type->render($mode, $R, $this->triples, $value, $hint);
-                if($mode == 'xhtml') $R->doc .= '</span>';
-                $firstvalue = false;
-            }
-            if($mode == 'xhtml') $R->doc .= '</span>';
+            $this->util->renderField($mode, $R, $this->triples, $values, $typeName, $hint, $type);
         }
 
         return true;

@@ -14,9 +14,9 @@ if (!defined('DOKU_INC')) die('Meh.');
  */
 class syntax_plugin_stratatemplatery_template extends DokuWiki_Syntax_Plugin {
     public function __construct() {
-        $this->strata =& plugin_load('helper', 'stratabasic');
-        $this->types =& plugin_load('helper', 'stratastorage_types');
-        $this->triples =& plugin_load('helper', 'stratastorage_triples');
+        $this->syntax =& plugin_load('helper', 'strata_syntax');
+        $this->util =& plugin_load('helper', 'strata_util');
+        $this->triples =& plugin_load('helper', 'strata_triples');
 
         $this->helper =& plugin_load('helper', 'templatery');
     }
@@ -39,6 +39,8 @@ class syntax_plugin_stratatemplatery_template extends DokuWiki_Syntax_Plugin {
     }
 
     public function handle($match, $state, $pos, &$handler){
+        $p = $this->syntax->getPatterns();
+
         preg_match('/\{\{template>([^\}|]+?)(?:\|([^}]+?))?}}/msS',$match,$capture);
         $id = $capture[1];
 
@@ -52,9 +54,10 @@ class syntax_plugin_stratatemplatery_template extends DokuWiki_Syntax_Plugin {
             // match a "property_type(hint)*= value" pattern
             // (the * is only used to indicate that the value is actually a comma-seperated list)
 
-            if(preg_match('/^('.STRATABASIC_PREDICATE.'?)(?:_([a-z0-9]+)(?:\(([^)]+)\))?)?(\*)?\s*=(.*)$/',$vars[$i],$capture)) {
+            if(preg_match("/^({$p->predicate})\s*({$p->type})?\s*(\*)?\s*=\s*({$p->any})\s*$/",$vars[$i],$capture)) {
                 // assign useful names
-                list($match, $property, $type, $hint, $multi, $values) = $capture;
+                list(, $property, $type, $multi, $values) = $capture;
+                list($type, $hint) = $p->type($type);
 
                 // trim property so we don't get accidental 'name   ' keys
                 $property = strtolower(utf8_trim($property));
@@ -76,14 +79,14 @@ class syntax_plugin_stratatemplatery_template extends DokuWiki_Syntax_Plugin {
 
                     // get type
                     if(!isset($type) || $type == '') {
-                        list($type, $hint) = $this->types->getDefaultType();
+                        list($type, $hint) = $this->util->getDefaultType();
                     }
                     if(!isset($typemap[$property])) {
                         $typemap[$property] = array('type'=>$type,'hint'=>($hint?:null));
                     }
 
                     // store normalized value
-                    $variables[$property][] = $this->types->loadType($type)->normalize($v,$hint);
+                    $variables[$property][] = $this->util->loadType($type)->normalize($v,$hint);
                 }
 
             } else {
@@ -107,10 +110,10 @@ class syntax_plugin_stratatemplatery_template extends DokuWiki_Syntax_Plugin {
         // prepare typemap
         foreach($typemap as $var=>$data) {
             $typemap[$var]['typeName'] = $data['type'];
-            $typemap[$var]['type'] = $this->types->loadType($data['type']);
+            $typemap[$var]['type'] = $this->util->loadType($data['type']);
         }
         
-        $handler = new stratatemplatery_handler($variables, $this->types, $this->triples, $typemap);
+        $handler = new stratatemplatery_handler($variables, $this->util, $this->triples, $typemap);
 
         $this->helper->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);
 
@@ -118,4 +121,3 @@ class syntax_plugin_stratatemplatery_template extends DokuWiki_Syntax_Plugin {
     }
 }
 
-// vim:ts=4:sw=4:et:
