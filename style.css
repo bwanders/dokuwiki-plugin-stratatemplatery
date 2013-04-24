@@ -1,0 +1,26 @@
+/**
+ * Strata Templatery styling
+ */
+
+/** Etnry wrapper */
+div.stratatemplatery-entrywrapper {
+    border-left: 2px solid #AADDAA;
+    margin-left: -4px;
+    padding-left: 2px;
+
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+}
+
+div.stratatemplatery-entrywrapper > .stratatemplatery-entrywrapper-label {
+    display: inline-block;
+
+    border-radius: 0 10em 10em 0;
+    margin-left: -2px;
+    padding-left: 0.25em;
+    padding-right: 0.5em;
+
+    background-color: #DDFFDD;
+    box-shadow: 0 0 0.5em #AADDAA inset;
+}
+

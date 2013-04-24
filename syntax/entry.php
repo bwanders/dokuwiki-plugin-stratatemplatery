@@ -165,6 +165,15 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_strata_entry {
 
         list($currentPosition, $previousPosition, $nextPosition) = $this->getPositions($data);
 
+        if(!empty($currentPosition)) {
+            $row['.current'][] = $currentPosition;
+            $typemap['.current'] = array(
+                'type'=>$this->util->loadType('text'),
+                'typeName'=>'text',
+                'hint'=>null
+            );
+        }
+
         if(!empty($previousPosition)) {
             $row['.previous'][] = $ID.'#'.$previousPosition;
             $typemap['.previous'] = array(
