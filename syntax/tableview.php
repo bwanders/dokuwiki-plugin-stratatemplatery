@@ -61,6 +61,8 @@ class syntax_plugin_stratatemplatery_tableview extends syntax_plugin_strata_sele
     }
 
     function fixTemplate(&$template) {
+        if($template == null) return null;
+
         // check start and end
         $start = !empty($template[0]) && ($template[0][0] == 'table_open');
         $end =   !empty($template[count($template)-1]) && $template[count($template)-1][0] == 'table_close';
@@ -119,6 +121,7 @@ class syntax_plugin_stratatemplatery_tableview extends syntax_plugin_strata_sele
             );
         }
 
+        // load templates
         foreach(array('header', 'row', 'footer') as $name) {
             if(empty($ids[$name]) && empty($fallbacks[$name])) continue;
             $templates[$name] = array();
@@ -127,25 +130,39 @@ class syntax_plugin_stratatemplatery_tableview extends syntax_plugin_strata_sele
 
             list($page, $hash) = $this->templates->resolveTemplate($id, $exists);
 
+            $error = null;
             $template = $this->templates->prepareTemplate($mode, $R, $page, $hash, $error);
-            $templates[$name]['template'] = $this->fixTemplate($template);
-            $templates[$name]['page'] = $page;
-            $templates[$name]['hash'] = $hash;
 
-            // stash actually used id
-            if($templates[$name]['template'] != false && empty($ids[$name])) {
-                $ids[$name] = $fallbacks[$name];
-            }
-
-            // error if explicit template is used
-            if($templates[$name]['template'] == false && !empty($ids[$name])) {
+            // handle error
+            if($error != null && !empty($ids[$name])) {
                 if($mode == 'xhtml') {
-                    $data['error']['message'] = $this->getLang('error_'.$name.'_template_not_table');
-                    msg($data['error']['message'],-1);
+                    $data['error']['message'] = sprintf($this->templates->getLang($error),$id);
+                    msg($data['error']['message'], -1);
                     $this->displayError($R, $data);
                 }
-
                 return false;
+            }
+
+            if($error == null) {
+                $templates[$name]['template'] = $this->fixTemplate($template);
+                $templates[$name]['page'] = $page;
+                $templates[$name]['hash'] = $hash;
+
+                // stash actually used id
+                if($templates[$name]['template'] != null && empty($ids[$name])) {
+                    $ids[$name] = $fallbacks[$name];
+                }
+
+                // error if explicit template is used
+                if($templates[$name]['template'] == null && !empty($ids[$name])) {
+                    if($mode == 'xhtml') {
+                        $data['error']['message'] = $this->getLang('error_'.$name.'_template_not_table');
+                        msg($data['error']['message'],-1);
+                        $this->displayError($R, $data);
+                    }
+
+                    return false;
+                }
             }
         }
 
@@ -160,6 +177,9 @@ class syntax_plugin_stratatemplatery_tableview extends syntax_plugin_strata_sele
                 );
             }
         }
+
+        // clear out errors
+        $error = null;
 
         $R->table_open();
         if(!empty($templates['header'])) {
