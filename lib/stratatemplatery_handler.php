@@ -105,7 +105,7 @@ class stratatemplatery_handler implements templatery_handler {
 
         // display fields
         if($values != array()) {
-            $this->util->renderField($mode, $R, $this->triples, $values, $typeName, $hint, $type);
+            $this->util->renderField($mode, $R, $this->triples, $values, $typeName, $hint, $type, $var);
         }
 
         return true;
