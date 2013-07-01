@@ -80,7 +80,14 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_strata_select {
                 );
             }
         }
-       
+
+        $sections = $this->_templateHasSections($template);
+
+        if($mode== 'xhtml' && !$sections) {
+            $R->doc .= '<div class="strata-container strata-container-view">'.DOKU_LF;
+            $this->util->renderCaptions($mode, $R, $data['fields']);
+        }
+
         foreach($result as $row) {
 			$values = array();
 			foreach($row as $key=>$value) {
@@ -88,10 +95,25 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_strata_select {
 			}
             $handler = new stratatemplatery_handler($values, $this->util, $this->triples, $typemap);
 
+            if($mode == 'xhtml' && !$sections) $R->doc .= '<div class="strata-item">'.DOKU_LF;
             $this->templates->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);
+            if($mode == 'xhtml' && !$sections) $R->doc .= '</div>'.DOKU_LF;
         }
+
+        if($mode== 'xhtml' && !$sections) $R->doc .= '</div>'.DOKU_LF;
+
         $result->closeCursor();
 
+        return false;
+    }
+
+    /**
+     * Check the given template for sections.
+     */
+    function _templateHasSections(&$template) {
+        foreach($template as $ins) {
+            if($ins[0] == 'plugin' && $ins[1][0] == 'templatery_section') return true;
+        }
         return false;
     }
 }
