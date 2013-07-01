@@ -129,7 +129,13 @@ class syntax_plugin_stratatemplatery_listview extends syntax_plugin_strata_selec
                 );
             }
         }
-      
+
+
+
+        if($mode == 'xhtml') $R->doc .= '<div class="strata-container strata-container-list">'.DOKU_LF;
+
+        $this->util->renderCaptions($mode, $R, $data['fields']);
+
         $R->listu_open(); 
         foreach($result as $row) {
 			$values = array();
@@ -141,6 +147,9 @@ class syntax_plugin_stratatemplatery_listview extends syntax_plugin_strata_selec
             $this->templates->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);
         }
         $R->listu_close();
+
+        if($mode == 'xhtml') $R->doc .= '</div>'.DOKU_LF;
+
         $result->closeCursor();
 
         return false;
