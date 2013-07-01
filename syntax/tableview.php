@@ -181,10 +181,16 @@ class syntax_plugin_stratatemplatery_tableview extends syntax_plugin_strata_sele
         // clear out errors
         $error = null;
 
+        if($mode == 'xhtml') $R->doc .= '<div class="strata-container strata-container-table">'.DOKU_LF;
+
+        $this->util->renderCaptions($mode, $R, $data['fields']);
+
         $R->table_open();
         if(!empty($templates['header'])) {
             $handler = new stratatemplatery_handler(array(), $this->util, $this->triples, array());
+            if($mode == 'xhtml') $R->doc .= '<thead>'.DOKU_LF;
             $this->templates->renderTemplate($mode, $R, $templates['header']['template'], $ids['header'], $templates['header']['page'], $templates['header']['hash'], $sectioning, $handler, $error);
+            if($mode == 'xhtml') $R->doc .= '</thead>'.DOKU_LF;
         }
         foreach($result as $row) {
 			$values = array();
@@ -193,13 +199,20 @@ class syntax_plugin_stratatemplatery_tableview extends syntax_plugin_strata_sele
 			}
             $handler = new stratatemplatery_handler($values, $this->util, $this->triples, $typemap);
 
+            if($mode == 'xhtml') $R->doc .= '<tbody class="strata-item">'.DOKU_LF;
             $this->templates->renderTemplate($mode, $R, $templates['row']['template'], $ids['row'], $templates['row']['page'], $templates['row']['hash'], $sectioning, $handler, $error);
+            if($mode == 'xhtml') $R->doc .= '</tbody>'.DOKU_LF;
         }
         if(!empty($templates['footer'])) {
             $handler = new stratatemplatery_handler(array(), $this->util, $this->triples, array());
+            if($mode == 'xhtml') $R->doc .= '<tfoot>'.DOKU_LF;
             $this->templates->renderTemplate($mode, $R, $templates['footer']['template'], $ids['footer'], $templates['footer']['page'], $templates['footer']['hash'], $sectioning, $handler, $error);
+            if($mode == 'xhtml') $R->doc .= '</tfoot>'.DOKU_LF;
         }
         $R->table_close();
+
+        if($mode == 'xhtml') $R->doc .= '</div>'.DOKU_LF;
+
         $result->closeCursor();
 
         return false;
