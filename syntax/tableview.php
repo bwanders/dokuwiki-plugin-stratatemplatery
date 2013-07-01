@@ -27,7 +27,7 @@ class syntax_plugin_stratatemplatery_tableview extends syntax_plugin_strata_sele
     }
 
     function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('<view:table'.$this->helper->fieldsShortPattern().'* *>\n.+?\n</view:table>',$mode, 'plugin_stratatemplatery_tableview');
+        $this->Lexer->addSpecialPattern('<view:table'.$this->helper->fieldsShortPattern().'* *>\n.+?\n</view>',$mode, 'plugin_stratatemplatery_tableview');
     }
 
     function handleHeader($header, &$result, &$typemap) {
