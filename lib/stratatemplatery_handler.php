@@ -21,6 +21,15 @@ class stratatemplatery_handler implements templatery_handler {
         $this->typemap = $typemap;
     }
 
+    public function listFields() {
+        $base = array();
+        foreach($this->vars as $var=>$val) {
+            if($val == array()) continue;
+            $base[] = $var;
+        }
+        return $base;
+    }
+
     /**
      * Splits a field into aggregation, type and accompanying hints.
      */

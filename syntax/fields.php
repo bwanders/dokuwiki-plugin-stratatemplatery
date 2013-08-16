@@ -16,36 +16,74 @@ class syntax_plugin_stratatemplatery_fields extends syntax_plugin_templatery_nat
         $this->triples =& plugin_load('helper', 'strata_triples');
     }
 
+    public function getType() {
+        return 'container';
+    }
+
     /**
      * The name of the native template. This is used to determine the
      * required syntax. (i.e., the syntax is @@->name@@).
      */ 
     protected function getName() {
-        return 'fields(?:\|.+?)?';
+        return 'fields(?:\|(?:only|exclude)=.+?)?';
     }
 
     public function handle($match, $state, $pos, &$handler){
-        preg_match('/@@->fields(?:\|(.+?))?@@/', $match, $m);
-        return !empty($m[1]) ? explode(',', $m[1]) : array();
+        preg_match('/@@->fields(?:\|(only|exclude)=(.+?))?@@/', $match, $m);
+
+        if(empty($m[1])) return array();
+
+        $result = array();
+        $result['command'] = $m[1];
+        $result['fields'] = array_map('trim', explode(',', $m[2]));
+        return $result;
     }
    
     public function render($mode, &$R, $data) {
         if($this->isPreview() && $mode == 'xhtml') {
            $R->doc .= '<span class="templatery-include">&#8594;fields';
-            if(count($data)) {
-                $fields = array();
-                foreach($data as $f) $fields[] = $R->_xmlEntities($f);
-                $R->doc .= ' <span class="value-separator">&#187;</span> ' . implode($fields, ', ');
+            if(!empty($data)) {
+                $R->doc .= ' <span class="value-separator">&#187;</span> ';
+                $R->doc .= $R->_xmlEntities($data['command']) . ' ';
+                $R->doc .= implode(', ', array_map(array($R, '_xmlEntities'), $data['fields']));
             }
             $R->doc .= '</span>';
             return true;
+        }
+
+        // construct list of fields to display
+        $fields = array();
+
+        // check if there is a command
+        if(empty($data)) {
+            $data['command'] = 'exclude';
+            $data['fields'] = array();
+        }
+
+        // determine selected fields
+        if($data['command'] == 'only') {
+            $fields = $data['fields'];
+        } elseif($data['command'] == 'exclude') {
+            $excludes = array_map('strtolower', $data['fields']);
+            foreach($this->listFields() as $field) {
+                // skip isa and title keys
+                if($field == $this->util->getTitleKey() || $field == $this->util->getIsaKey()) continue;
+
+                // skip any field starting with '.'
+                if($field{0} == '.') continue;
+
+                // skip all fields that are excluded
+                if(in_array(strtolower($field), $excludes)) continue;
+
+                $fields[] = $field;
+            }
         }
 
         if(!$this->isPreview()) {
             $R->table_open();
             
             // render a row for each key, displaying the values as comma-separated list
-            foreach($data as $field) {
+            foreach($fields as $field) {
                 if($this->hasField($field)) {
                     // render row header
                     $R->tablerow_open();
