@@ -23,7 +23,7 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_strata_entry {
     }
 
     function connectTo($mode) {
-        if($this->getConf('enable_entry')) {
+        if($this->syntax->getConf('enable_entry')) {
             $this->Lexer->addSpecialPattern('<data(?: +[^#>]+?)?(?: *#[^>]*?)?>\n(?:.*?\n)*?</data>',$mode, 'plugin_stratatemplatery_entry');
         }
     }
