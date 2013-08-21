@@ -44,23 +44,26 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_strata_entry {
         preg_match('/^( +[^#>]+)?(?: *#([^>]*?))?$/', $header, $capture);
 
         $classes = preg_split('/\s+/', trim($capture[1]));
+        $useTemplate = true;
+
 
         // find the first class with an exclamation
         foreach($classes as $class) {
             if($class[0] == '!') {
+                if($class == '!') $useTemplate = false;
                 $template = trim($class,'!');
                 $header = str_replace($class,$template,$header);
                 break;
             }
         }
 
-        // if there was not explicit class focus, we try the first
-        if(empty($template)) {
+        // if there was no explicit template focus, we try the first
+        if(empty($template) && $useTemplate) {
             $template = $classes[0];
         }
 
         $template = trim($template);
-        $result['template'][0] = $template ?: null;
+        $result['template'][0] = (!empty($template) and $useTemplate) ? $template : null;
 
         return $header;
     }
