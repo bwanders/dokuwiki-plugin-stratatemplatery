@@ -80,7 +80,7 @@ class syntax_plugin_stratatemplatery_listview extends syntax_plugin_strata_selec
 
         // if both start and end are correct, and we never leave the list in between
         // we have a good list item, and will correct it
-        return array_slice($template, 1, -1);
+        return array_slice($template, 2, -2);
     }
 
     function render($mode, &$R, $data) {
@@ -137,6 +137,7 @@ class syntax_plugin_stratatemplatery_listview extends syntax_plugin_strata_selec
         $this->util->renderCaptions($mode, $R, $data['fields']);
 
         $R->listu_open(); 
+        $itemcount = 0;
         foreach($result as $row) {
 			$values = array();
 			foreach($row as $key=>$value) {
@@ -144,7 +145,9 @@ class syntax_plugin_stratatemplatery_listview extends syntax_plugin_strata_selec
 			}
             $handler = new stratatemplatery_handler($values, $this->util, $this->triples, $typemap);
 
+            $R->doc .= '<li class="level1 strata-item" data-strata-order="'.($itemcount++).'">'.DOKU_LF;
             $this->templates->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);
+            $R->doc .= '</li>'.DOKU_LF;
         }
         $R->listu_close();
 

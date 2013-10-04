@@ -88,6 +88,7 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_strata_select {
             $this->util->renderCaptions($mode, $R, $data['fields']);
         }
 
+        $itemcount = 0;
         foreach($result as $row) {
 			$values = array();
 			foreach($row as $key=>$value) {
@@ -95,7 +96,7 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_strata_select {
 			}
             $handler = new stratatemplatery_handler($values, $this->util, $this->triples, $typemap);
 
-            if($mode == 'xhtml' && !$sections) $R->doc .= '<div class="strata-item">'.DOKU_LF;
+            if($mode == 'xhtml' && !$sections) $R->doc .= '<div class="strata-item" data-strata-order="'.($itemcount++).'">'.DOKU_LF;
             $this->templates->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);
             if($mode == 'xhtml' && !$sections) $R->doc .= '</div>'.DOKU_LF;
         }

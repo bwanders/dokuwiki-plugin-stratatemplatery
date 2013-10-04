@@ -192,6 +192,7 @@ class syntax_plugin_stratatemplatery_tableview extends syntax_plugin_strata_sele
             $this->templates->renderTemplate($mode, $R, $templates['header']['template'], $ids['header'], $templates['header']['page'], $templates['header']['hash'], $sectioning, $handler, $error);
             if($mode == 'xhtml') $R->doc .= '</thead>'.DOKU_LF;
         }
+        $itemcount = 0;
         foreach($result as $row) {
 			$values = array();
 			foreach($row as $key=>$value) {
@@ -199,7 +200,7 @@ class syntax_plugin_stratatemplatery_tableview extends syntax_plugin_strata_sele
 			}
             $handler = new stratatemplatery_handler($values, $this->util, $this->triples, $typemap);
 
-            if($mode == 'xhtml') $R->doc .= '<tbody class="strata-item">'.DOKU_LF;
+            if($mode == 'xhtml') $R->doc .= '<tbody class="strata-item" data-strata-order="'.($itemcount++).'">'.DOKU_LF;
             $this->templates->renderTemplate($mode, $R, $templates['row']['template'], $ids['row'], $templates['row']['page'], $templates['row']['hash'], $sectioning, $handler, $error);
             if($mode == 'xhtml') $R->doc .= '</tbody>'.DOKU_LF;
         }
