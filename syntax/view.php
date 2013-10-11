@@ -83,8 +83,8 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_strata_select {
 
         $sections = $this->_templateHasSections($template);
 
-        if($mode== 'xhtml' && !$sections) {
-            $R->doc .= '<div class="strata-container strata-container-view">'.DOKU_LF;
+        if(!$sections) {
+            $this->ui_container_open($mode, $R, $data, array('strata-container', 'strata-container-view'));
             $this->util->renderCaptions($mode, $R, $data['fields']);
         }
 
@@ -101,7 +101,7 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_strata_select {
             if($mode == 'xhtml' && !$sections) $R->doc .= '</div>'.DOKU_LF;
         }
 
-        if($mode== 'xhtml' && !$sections) $R->doc .= '</div>'.DOKU_LF;
+        if(!$sections) $this->ui_container_close($mode, $R);
 
         $result->closeCursor();
 

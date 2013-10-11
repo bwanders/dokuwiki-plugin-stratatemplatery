@@ -132,7 +132,7 @@ class syntax_plugin_stratatemplatery_listview extends syntax_plugin_strata_selec
 
 
 
-        if($mode == 'xhtml') $R->doc .= '<div class="strata-container strata-container-list">'.DOKU_LF;
+        $this->ui_container_open($mode, $R, $data, array('strata-container','strata-container-list'));
 
         $this->util->renderCaptions($mode, $R, $data['fields']);
 
@@ -151,7 +151,7 @@ class syntax_plugin_stratatemplatery_listview extends syntax_plugin_strata_selec
         }
         $R->listu_close();
 
-        if($mode == 'xhtml') $R->doc .= '</div>'.DOKU_LF;
+        $this->ui_container_close($mode, $R);
 
         $result->closeCursor();
 
