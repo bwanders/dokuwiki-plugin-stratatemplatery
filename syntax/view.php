@@ -68,6 +68,15 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_strata_select {
         list($page, $hash) = $this->templates->resolveTemplate($id, $exists);
 
         $template = $this->templates->prepareTemplate($mode, $R, $page, $hash, $error);
+        // handle error
+        if($error != null) {
+            if($mode == 'xhtml') {
+                $data['error']['message'] = sprintf($this->templates->getLang($error),$id);
+                msg($data['error']['message'], -1);
+                $this->displayError($R, $data);
+            }
+            return false;
+        }
 
         $typemap = array();
         foreach($data['fields'] as $meta) {
@@ -112,9 +121,13 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_strata_select {
      * Check the given template for sections.
      */
     function _templateHasSections(&$template) {
+		// abort if template is a failure
+		if($template == null) return false;
+
         foreach($template as $ins) {
             if($ins[0] == 'plugin' && $ins[1][0] == 'templatery_section') return true;
         }
+
         return false;
     }
 }
