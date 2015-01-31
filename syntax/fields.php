@@ -79,7 +79,7 @@ class syntax_plugin_stratatemplatery_fields extends syntax_plugin_templatery_nat
             }
         }
 
-        if(!$this->isPreview() && !empty($fields))) {
+        if(!$this->isPreview() && !empty($fields)) {
             $R->table_open();
             
             // render a row for each key, displaying the values as comma-separated list
