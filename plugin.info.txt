@@ -1,7 +1,7 @@
 base   stratatemplatery
 author Brend Wanders
 email  b.wanders@utwente.nl
-date   2015-02-08
+date   2016-09-21
 name   Strata Templatery
 desc   Combines Templatery and Strata to template queries and entries
 url    http://github.com/bwanders/dokuwiki-plugin-stratatemplatery
