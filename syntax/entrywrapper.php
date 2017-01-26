@@ -46,7 +46,7 @@ class syntax_plugin_stratatemplatery_entrywrapper extends DokuWiki_Syntax_Plugin
         $this->Lexer->addExitPattern('</entry>','plugin_stratatemplatery_entrywrapper');
     }
 
-    public function handle($match, $state, $pos, &$handler){
+    public function handle($match, $state, $pos, Doku_Handler $handler){
         switch($state) {
             case DOKU_LEXER_ENTER:
                 // output an instruction
@@ -64,7 +64,7 @@ class syntax_plugin_stratatemplatery_entrywrapper extends DokuWiki_Syntax_Plugin
         return false;
     }
 
-    public function render($mode, &$R, $data) {
+    public function render($mode, Doku_Renderer $R, $data) {
         if($mode != 'xhtml') return false;
 
         switch($data[0]) {
@@ -99,4 +99,3 @@ class syntax_plugin_stratatemplatery_entrywrapper extends DokuWiki_Syntax_Plugin
         return true;
     }
 }
-

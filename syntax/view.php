@@ -5,7 +5,7 @@
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Brend Wanders <b.wanders@utwente.nl>
  */
- 
+
 // must be run within Dokuwiki
 if (!defined('DOKU_INC')) die('Meh.');
 
@@ -45,7 +45,7 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_strata_select {
         return $match;
     }
 
-    function render($mode, &$R, $data) {
+    function render($mode, Doku_Renderer $R, $data) {
         if($data == array() || isset($data['error'])) {
             if($mode == 'xhtml') {
                 $this->displayError($R, $data);
@@ -131,4 +131,3 @@ class syntax_plugin_stratatemplatery_view extends syntax_plugin_strata_select {
         return false;
     }
 }
-

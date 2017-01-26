@@ -5,7 +5,7 @@
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Brend Wanders <b.wanders@utwente.nl>
  */
- 
+
 // must be run within Dokuwiki
 if (!defined('DOKU_INC')) die('Meh.');
 
@@ -44,7 +44,7 @@ class syntax_plugin_stratatemplatery_tableview extends syntax_plugin_strata_sele
             } elseif(count($lines) == 2) {
                 $result['template'][0]['header'] = trim($lines[0]['text']);
                 $result['template'][0]['row'] = trim($lines[1]['text']);
-            } elseif(count($lines) == 3) {  
+            } elseif(count($lines) == 3) {
                 $result['template'][0]['header'] = trim($lines[0]['text']);
                 $result['template'][0]['row'] = trim($lines[1]['text']);
                 $result['template'][0]['footer'] = trim($lines[2]['text']);
@@ -70,7 +70,7 @@ class syntax_plugin_stratatemplatery_tableview extends syntax_plugin_strata_sele
         if(!$start || !$end) {
             return false;
         }
-        
+
         // check whether it goes below 1 (i.e. we leave the overall list)
         $counter = 1;
         for($i = 1; $i < count($template)-1; $i++) {
@@ -92,7 +92,7 @@ class syntax_plugin_stratatemplatery_tableview extends syntax_plugin_strata_sele
         return array_slice($template, 1, -1);
     }
 
-    function render($mode, &$R, $data) {
+    function render($mode, Doku_Renderer $R, $data) {
         if($data == array() || isset($data['error'])) {
             if($mode == 'xhtml') {
                 $this->displayError($R, $data);
@@ -219,4 +219,3 @@ class syntax_plugin_stratatemplatery_tableview extends syntax_plugin_strata_sele
         return false;
     }
 }
-

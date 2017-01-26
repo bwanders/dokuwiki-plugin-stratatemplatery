@@ -5,7 +5,7 @@
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Brend Wanders <b.wanders@utwente.nl>
  */
- 
+
  // must be run within Dokuwiki
 if (!defined('DOKU_INC')) die('Meh.');
 
@@ -80,7 +80,7 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_strata_entry {
     }
 
 
-    function render($mode, &$R, $data) {
+    function render($mode, Doku_Renderer $R, $data) {
         global $ID;
 
         // if the entry is broken, render and abort
@@ -104,7 +104,7 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_strata_entry {
             if(!$exists || $error == 'template_nonexistant') return $result;
         }
 
-        // create '.subject' field 
+        // create '.subject' field
         $subject = $ID.'#'.$data['entry'];
 
         // resolve the subject to normalize everything
@@ -158,7 +158,7 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_strata_entry {
             }
         }
 
-        // store '.subject' field 
+        // store '.subject' field
         $row['.subject'][] = $subject;
         $typemap['.subject'] = array(
             'type'=>$this->util->loadType('ref'),
@@ -196,7 +196,7 @@ class syntax_plugin_stratatemplatery_entry extends syntax_plugin_strata_entry {
         }
 
 
-      
+
         $handler = new stratatemplatery_handler($row, $this->util, $this->triples, $typemap);
 
         $this->templates->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);

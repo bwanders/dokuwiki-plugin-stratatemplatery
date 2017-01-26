@@ -23,12 +23,12 @@ class syntax_plugin_stratatemplatery_fields extends syntax_plugin_templatery_nat
     /**
      * The name of the native template. This is used to determine the
      * required syntax. (i.e., the syntax is @@->name@@).
-     */ 
+     */
     protected function getName() {
         return 'fields(?:\|(?:only|exclude)=.+?)?';
     }
 
-    public function handle($match, $state, $pos, &$handler){
+    public function handle($match, $state, $pos, Doku_Handler $handler){
         preg_match('/@@->fields(?:\|(only|exclude)=(.+?))?@@/', $match, $m);
 
         if(empty($m[1])) return array();
@@ -38,8 +38,8 @@ class syntax_plugin_stratatemplatery_fields extends syntax_plugin_templatery_nat
         $result['fields'] = array_map('trim', explode(',', $m[2]));
         return $result;
     }
-   
-    public function render($mode, &$R, $data) {
+
+    public function render($mode, Doku_Renderer $R, $data) {
         if($this->isPreview() && $mode == 'xhtml') {
            $R->doc .= '<span class="templatery-include">&#8594;fields';
             if(!empty($data)) {
@@ -81,7 +81,7 @@ class syntax_plugin_stratatemplatery_fields extends syntax_plugin_templatery_nat
 
         if(!$this->isPreview() && !empty($fields)) {
             $R->table_open();
-            
+
             // render a row for each key, displaying the values as comma-separated list
             foreach($fields as $field) {
                 if($this->hasField($field)) {
@@ -107,4 +107,3 @@ class syntax_plugin_stratatemplatery_fields extends syntax_plugin_templatery_nat
         return false;
     }
 }
-

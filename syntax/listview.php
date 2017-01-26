@@ -5,7 +5,7 @@
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Brend Wanders <b.wanders@utwente.nl>
  */
- 
+
 // must be run within Dokuwiki
 if (!defined('DOKU_INC')) die('Meh.');
 
@@ -61,7 +61,7 @@ class syntax_plugin_stratatemplatery_listview extends syntax_plugin_strata_selec
         if(!$start || !$end) {
             return false;
         }
-        
+
         // check whether it goes below 1 (i.e. we leave the overall list)
         $counter = 1;
         for($i = 1; $i < count($template)-1; $i++) {
@@ -83,7 +83,7 @@ class syntax_plugin_stratatemplatery_listview extends syntax_plugin_strata_selec
         return array_slice($template, 2, -2);
     }
 
-    function render($mode, &$R, $data) {
+    function render($mode, Doku_Renderer $R, $data) {
         if($data == array() || isset($data['error'])) {
             if($mode == 'xhtml') {
                 $this->displayError($R, $data);
@@ -136,7 +136,7 @@ class syntax_plugin_stratatemplatery_listview extends syntax_plugin_strata_selec
 
         $this->util->renderCaptions($mode, $R, $data['fields']);
 
-        $R->listu_open(); 
+        $R->listu_open();
         $itemcount = 0;
         foreach($result as $row) {
 			$values = array();
@@ -158,4 +158,3 @@ class syntax_plugin_stratatemplatery_listview extends syntax_plugin_strata_selec
         return false;
     }
 }
-

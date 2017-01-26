@@ -38,13 +38,13 @@ class syntax_plugin_stratatemplatery_template extends DokuWiki_Syntax_Plugin {
         $this->Lexer->addSpecialPattern('\{\{template>[^}]+?}}',$mode,'plugin_stratatemplatery_template');
     }
 
-    public function handle($match, $state, $pos, &$handler){
+    public function handle($match, $state, $pos, Doku_Handler $handler){
         $p = $this->syntax->getPatterns();
 
         preg_match('/\{\{template>([^\}|]+?)(?:\|([^}]+?))?}}/msS',$match,$capture);
         $id = $capture[1];
 
-        // parse variables 
+        // parse variables
         $variables = array();
         $typemap = array();
         $vars = explode('|', $capture[2]);
@@ -100,7 +100,7 @@ class syntax_plugin_stratatemplatery_template extends DokuWiki_Syntax_Plugin {
         return array($id, $variables, $typemap, $sectioning);
     }
 
-    public function render($mode, &$R, $data) {
+    public function render($mode, Doku_Renderer $R, $data) {
         list($id, $variables, $typemap, $sectioning) = $data;
 
         list($page, $hash) = $this->helper->resolveTemplate($id, $exists);
@@ -112,7 +112,7 @@ class syntax_plugin_stratatemplatery_template extends DokuWiki_Syntax_Plugin {
             $typemap[$var]['typeName'] = $data['type'];
             $typemap[$var]['type'] = $this->util->loadType($data['type']);
         }
-        
+
         $handler = new stratatemplatery_handler($variables, $this->util, $this->triples, $typemap);
 
         $this->helper->renderTemplate($mode, $R, $template, $id, $page, $hash, $sectioning, $handler, $error);
@@ -120,4 +120,3 @@ class syntax_plugin_stratatemplatery_template extends DokuWiki_Syntax_Plugin {
         return true;
     }
 }
-
