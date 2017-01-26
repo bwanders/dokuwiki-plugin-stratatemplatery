@@ -21,7 +21,7 @@ class action_plugin_stratatemplatery extends DokuWiki_Action_Plugin {
      *
      * @param controller object the controller to register with
      */
-    public function register(Doku_Event_Handler &$controller) {
+    public function register(Doku_Event_Handler $controller) {
         $controller->register_hook('STRATA_PREPARE_QUERY', 'BEFORE', $this, '_strata_prepare_query');
     }
 
