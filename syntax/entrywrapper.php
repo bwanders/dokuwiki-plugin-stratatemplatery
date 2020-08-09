@@ -54,7 +54,7 @@ class syntax_plugin_stratatemplatery_entrywrapper extends DokuWiki_Syntax_Plugin
 
             case DOKU_LEXER_UNMATCHED:
                 // we don't care about unmatched things; just get them rendered
-                $handler->_addCall('cdata', array($match), $pos);
+                $handler->addCall('cdata', array($match), $pos);
                 return false;
 
             case DOKU_LEXER_EXIT:
